@@ -7,75 +7,98 @@
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+<body class="bg-gradient-to-br from-green-50 to-green-100 min-h-screen flex items-center justify-center p-6">
 
-<div class="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-8">
+<div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-10">
+
+  <!-- LOGO -->
+  <div class="flex justify-center mb-4">
+    <img src="logo.png" alt="Meristem Logo" class="h-16">
+  </div>
 
   <!-- HEADER -->
   <div class="text-center mb-8">
-    <h1 class="text-3xl font-bold text-gray-800">Stock Transaction Calculator</h1>
-    <p class="text-gray-500 mt-2">
+    <h1 class="text-3xl font-bold text-green-800">Stock Transaction Calculator</h1>
+    <p class="text-gray-600 mt-2">
       Calculate buy/sell costs with full fee breakdown for NGX
     </p>
   </div>
 
   <!-- BUY SELL -->
-  <div class="flex bg-gray-200 rounded-xl p-1 mb-6">
+  <div class="flex bg-green-100 rounded-xl p-1 mb-6">
     <button onclick="setType('buy')" id="buyBtn"
-      class="w-1/2 py-3 rounded-xl bg-purple-600 text-white font-semibold">
+      class="w-1/2 py-3 rounded-xl bg-green-600 text-white font-semibold transition">
       Buy
     </button>
     <button onclick="setType('sell')" id="sellBtn"
-      class="w-1/2 py-3 rounded-xl text-gray-600 font-semibold">
+      class="w-1/2 py-3 rounded-xl text-green-700 font-semibold transition">
       Sell
     </button>
   </div>
 
   <!-- MODE -->
-  <div class="flex bg-gray-100 rounded-xl p-1 mb-6">
+  <div class="flex bg-green-50 rounded-xl p-1 mb-6">
     <button onclick="setMode('units')" id="unitsBtn"
-      class="w-1/2 py-2 rounded-xl bg-purple-600 text-white font-semibold">
+      class="w-1/2 py-2 rounded-xl bg-green-600 text-white font-semibold">
       Units & Price to Total
     </button>
     <button onclick="setMode('budget')" id="budgetBtn"
-      class="w-1/2 py-2 rounded-xl text-gray-600 font-semibold">
+      class="w-1/2 py-2 rounded-xl text-green-700 font-semibold">
       Budget to Units
     </button>
   </div>
 
   <!-- INPUTS -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
     <div>
-      <label class="text-sm text-gray-500">Units</label>
-      <input id="units" type="number" class="w-full border p-3 rounded-lg">
+      <label class="text-sm text-gray-600">Units</label>
+      <input id="units" type="number" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
     </div>
 
     <div>
-      <label class="text-sm text-gray-500">Price per Unit (₦)</label>
-      <input id="price" type="number" class="w-full border p-3 rounded-lg">
+      <label class="text-sm text-gray-600">Price per Unit (₦)</label>
+      <input id="price" type="number" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
     </div>
 
     <div>
-      <label class="text-sm text-gray-500">Budget (₦)</label>
-      <input id="budget" type="number" class="w-full border p-3 rounded-lg">
+      <label class="text-sm text-gray-600">Budget (₦)</label>
+      <input id="budget" type="number" class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
     </div>
 
     <div>
-      <label class="text-sm text-gray-500">Brokerage (%)</label>
+      <label class="text-sm text-gray-600">Brokerage (%)</label>
       <input id="brokerage" type="number" value="1.35" step="0.01"
-        class="w-full border p-3 rounded-lg">
+        class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
     </div>
 
   </div>
 
   <button onclick="calculate()" 
-    class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-semibold">
+    class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold shadow-md transition">
     Calculate
   </button>
 
-  <!-- RESULT -->
-  <div id="result" class="mt-8 text-sm"></div>
+  <!-- RESULTS -->
+  <div id="result" class="mt-8 hidden">
+    <div class="bg-green-50 p-6 rounded-xl border border-green-200 space-y-2 text-sm">
+      <p><strong>Units:</strong> <span id="r_units"></span></p>
+      <p><strong>Gross Value:</strong> ₦<span id="r_gross"></span></p>
+      <p><strong>Brokerage:</strong> ₦<span id="r_brokerage"></span></p>
+      <p><strong>VAT (7.5% of Brokerage):</strong> ₦<span id="r_vat"></span></p>
+      <p><strong>CSCS Alert Fee:</strong> ₦10.75</p>
+      <p><strong>Statutory Fees:</strong> ₦<span id="r_other"></span></p>
+      <hr class="my-2">
+      <p><strong>Total Fees:</strong> ₦<span id="r_totalfees"></span></p>
+      <p class="text-xl font-bold text-green-700 mt-2" id="r_net"></p>
+    </div>
+  </div>
+
+  <!-- SIGNATURE -->
+  <div class="text-center mt-10 text-sm text-gray-500">
+    Built for Meristem Capital<br>
+    <span class="font-semibold text-green-800">By Hammed Abolaji</span>
+  </div>
 
 </div>
 
@@ -86,17 +109,17 @@ let mode = "units";
 
 function setType(type){
   tradeType = type;
-  document.getElementById("buyBtn").classList.toggle("bg-purple-600", type==="buy");
+  document.getElementById("buyBtn").classList.toggle("bg-green-600", type==="buy");
   document.getElementById("buyBtn").classList.toggle("text-white", type==="buy");
-  document.getElementById("sellBtn").classList.toggle("bg-purple-600", type==="sell");
+  document.getElementById("sellBtn").classList.toggle("bg-green-600", type==="sell");
   document.getElementById("sellBtn").classList.toggle("text-white", type==="sell");
 }
 
 function setMode(m){
   mode = m;
-  document.getElementById("unitsBtn").classList.toggle("bg-purple-600", m==="units");
+  document.getElementById("unitsBtn").classList.toggle("bg-green-600", m==="units");
   document.getElementById("unitsBtn").classList.toggle("text-white", m==="units");
-  document.getElementById("budgetBtn").classList.toggle("bg-purple-600", m==="budget");
+  document.getElementById("budgetBtn").classList.toggle("bg-green-600", m==="budget");
   document.getElementById("budgetBtn").classList.toggle("text-white", m==="budget");
 }
 
@@ -109,20 +132,18 @@ function calculate(){
 
   let gross;
 
-  if(mode === "units"){
+  if(mode==="units"){
     gross = units * price;
   } else {
-    // reverse engineer
+    const flat = 10.75;
     const percentageFees = brokerageRate 
-      + (brokerageRate * 0.0075) 
-      + (tradeType==="buy" ? 0.003 + 0.0008 : 0.003 + 0.003 + 0.0008);
-
-    const flatFee = 10.75;
+        + (brokerageRate * 0.075)
+        + (tradeType==="buy" ? 0.003 + 0.0008 : 0.003 + 0.003 + 0.0008);
 
     if(tradeType==="buy"){
-      gross = (budget - flatFee) / (1 + percentageFees);
+      gross = (budget - flat) / (1 + percentageFees);
     } else {
-      gross = (budget + flatFee) / (1 - percentageFees);
+      gross = (budget + flat) / (1 - percentageFees);
     }
 
     units = Math.floor(gross / price);
@@ -130,43 +151,35 @@ function calculate(){
   }
 
   const brokerage = gross * brokerageRate;
-  const vat = brokerage * 0.0075;
+  const vat = brokerage * 0.075;
   const alert = 10.75;
   const stamp = gross * 0.0008;
 
-  let otherFees;
+  let other;
 
   if(tradeType==="buy"){
     const sec = gross * 0.003;
-    otherFees = sec + stamp;
+    other = sec + stamp;
   } else {
     const nse = gross * 0.003;
     const cscs = gross * 0.003;
-    otherFees = nse + cscs + stamp;
+    other = nse + cscs + stamp;
   }
 
-  const totalFees = brokerage + vat + alert + otherFees;
+  const totalFees = brokerage + vat + alert + other;
+  const net = tradeType==="buy" ? gross + totalFees : gross - totalFees;
 
-  const net = tradeType==="buy"
-    ? gross + totalFees
-    : gross - totalFees;
+  document.getElementById("r_units").innerText = units.toLocaleString();
+  document.getElementById("r_gross").innerText = gross.toLocaleString(undefined,{minimumFractionDigits:2});
+  document.getElementById("r_brokerage").innerText = brokerage.toFixed(2);
+  document.getElementById("r_vat").innerText = vat.toFixed(2);
+  document.getElementById("r_other").innerText = other.toFixed(2);
+  document.getElementById("r_totalfees").innerText = totalFees.toFixed(2);
+  document.getElementById("r_net").innerText =
+    (tradeType==="buy"?"Total Payable: ₦":"Net Proceeds: ₦") +
+    net.toLocaleString(undefined,{minimumFractionDigits:2});
 
-  document.getElementById("result").innerHTML = `
-    <div class="bg-gray-50 p-6 rounded-xl border space-y-2">
-      <p><strong>Units:</strong> ${units.toLocaleString()}</p>
-      <p><strong>Gross Value:</strong> ₦${gross.toLocaleString(undefined,{minimumFractionDigits:2})}</p>
-      <p><strong>Brokerage:</strong> ₦${brokerage.toFixed(2)}</p>
-      <p><strong>VAT on Brokerage:</strong> ₦${vat.toFixed(2)}</p>
-      <p><strong>CSCS Alert:</strong> ₦10.75</p>
-      <p><strong>Other Statutory Fees:</strong> ₦${otherFees.toFixed(2)}</p>
-      <hr class="my-2">
-      <p><strong>Total Fees:</strong> ₦${totalFees.toFixed(2)}</p>
-      <p class="text-lg font-bold text-purple-700">
-        ${tradeType==="buy"?"Total Payable":"Net Proceeds"}:
-        ₦${net.toLocaleString(undefined,{minimumFractionDigits:2})}
-      </p>
-    </div>
-  `;
+  document.getElementById("result").classList.remove("hidden");
 }
 
 </script>
